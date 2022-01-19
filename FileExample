@@ -1,0 +1,159 @@
+
+        //Inicia a grid de jurisprudencia
+        $(gridPrincipal).hide();
+
+        if (dataTable != undefined) {
+            dataTable.clear();
+            dataTable.destroy();
+        }
+
+        dataTable = $(gridPrincipal).DataTable({
+            "data": dadosJurisprudencia,
+            columnDefs: [
+              { visible: false, targets: 1 },
+              { width: 50, targets: 1 }
+            ],
+            'columnDefs': [
+               { 'targets': 1, 'visible': false },
+            ],
+            "sDom": 'rts<"bottom"flp><"clear">',
+            "language": {
+                "url": "../Scripts/DataTables/Portuguese-Brasil.js"
+            },
+            "order": [[0, "asc"]],
+            "columns": [
+                {
+                    "data": null,
+                    "class": "details-control",
+                    "orderable": false,
+                    "defaultContent": ""
+                },
+                { "data": "id", "name": "id" },
+                { "data": "Tese.Descricao", "name": "tese", "class": "left tese" },
+                { sType: "date-uk", "data": "DataPublicacao", "name": "data publicação", "class": "datapublicacao" },
+                { "data": "Resultado.Descricao", "name": "geral", "class": "geral" },
+                {
+                    "data": "DecisaoUnanime", "name": "decisão unânime", "class": "decisao",
+                    "render": function (d, t, r) {
+                        var data = '';
+                        if (t == 'display') {
+                            if (d === true) {
+                                data = 'SIM';
+                            } else {
+                                data = 'NÃO';
+                            }
+                        }
+                        return data;
+                    }
+                },
+                {
+                    "data": "Acordao", "name": "acordão", "class": "left acordao",
+                    "render": function (d, t, r) {
+                        if (t === 'display') {
+                            if (d != null) {
+                                d = '<a href="javascript:void(0);" onclick="javascript: $.DownloadFile(' + r.id + ');">' + d + '</a>';
+                            }
+                        }
+                        return d;
+                    }
+                }
+            ],
+
+            "language": {
+                "paginate": { "first ": "Primeira", "previous": "Anterior", "next": "Próxima", "last": "Última" },
+                "emptyTable": "Consulta não retornou registros",
+                "info": "Exibindo de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Exibindo 0 registros",
+                "infoFiltered": "(filtrados do total de _MAX_ registros)",
+                "infoPostFix": "", "thousands": ",",
+                "lengthMenu": "Exibir _MENU_",
+                "loadingRecords": "Carregando...",
+                "processing": "Processando...",
+                "zeroRecords": "Consulta não retornou registros",
+            },
+
+            "autoWidth": false,
+            //"responsive": true,
+            //"searching": true,
+            "ordering": true,
+            "scrollX": true,
+            "bDestroy": true,
+
+            "fnCreatedRow": function (nRow, aData, iDataIndex) {
+                $(nRow).attr('id', aData.id);
+            },
+
+            drawCallback: function () {
+
+                redesignHead(gridPrincipal);
+                $(gridPrincipal + "_filter").prop("style", "display: none");
+
+            },
+            initComplete: function (settings, json) {
+
+                redesignHead(gridPrincipal);
+
+                $(gridPrincipal + "_filter").attr("style", "display: none");
+                //$(gridPrincipal).attr("style", "width: 980px");
+
+                setTimeout(function (e) {
+                    $("#gridProcessoPautaMetaPrincipal_wrapper").attr("style", "width: 100% !important;")
+                    $("#gridProcessoPautaMetaPrincipal_paginate").attr("style", "float: none !important; text-align: unset !important")
+                }, 100);
+
+            },
+            "rowCallback": function (row, data, index) {
+
+                if (index % 2 == 0) {
+                    $(row).removeClass('webgrid-alternating-row');
+                    $(row).addClass('webgrid-row-style');
+                } else {
+                    $(row).removeClass('webgrid-row-style');
+                    $(row).addClass('webgrid-alternating-row');
+                }
+                var trs = $(".webgrid-header");
+
+                $.each(trs, function (k, v) {
+                    if ($(v).prop("style").height === "0px") {
+                        v.remove();
+                    }
+                });
+
+            }
+        });
+        
+        
+        
+        
+        
+        
+                <div class="col-12" id="divPautadoMetaPrincipal">
+                    <br />
+                    <div class="table-responsive">
+                        <table id="gridProcessoPautaMetaPrincipal" class="display nowrap dataTable nowrap" style="display: none;">
+                            <colgroup>
+                                <col style="width:50px">
+                                <col style="width:270px">   
+                                <col style="width:150px">
+                                <col style="width:125px">
+                                <col style="width:125px">
+                                <col style="width:150px">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th colspan="4" rowspan="1" class="infoGrid">informações da jurisprudência</th>
+                                    <th colspan="3" rowspan="1" class="listaGrid">resultados</th>
+                                </tr>
+                                <tr class="webgrid-header">
+                                    <th></th>
+                                    <th style="visibility:hidden"></th>
+                                    <th>tese</th>
+                                    <th>dt. publicação</th>
+                                    <th>geral</th>
+                                    <th>decisão unânime</th>
+                                    <th>acórdão</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
